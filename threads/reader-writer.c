@@ -1,8 +1,13 @@
+//mutual exclusion 
+//readers priority
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
 sem_t x;
+wsem = 1;
+
+int readCount;
 
 void READUNIT(int index){
   printf("Reader #%d is reading\n", index);
@@ -14,14 +19,24 @@ void WRITEUNIT(int index){
   sleep(5);
   printf("Writer #%d finished\n", index);
 }
-void* reader(void *arg){
-  int index = * (int*) arg;
-  printf ("Reader #%d is trying to read\n", index);
-  sem_wait(&x);
-  READUNIT(index);
-  sem_post(&x);
+void* reader(){
+  while(true){
+    sem_wait(&x);
+    readCount++;
+    if(readCount ==1){
+      sem_wait(wsem);
+    }
+    sem_post(&x);
+    READUNIT();
+    sem_wait(&x)
+    readCount--;
+    if(readCount == 0){
+      sem_post(wsem);
+    }
+    sem_post(&x);
+  }
 }
-void* writer(void *arg){
+void* writer(){
   int index = *(int*)arg;
   printf("Writer #%d is tying to write\n", index);
   sem_wait(&x);
