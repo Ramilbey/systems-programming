@@ -4,8 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
-sem_t x;
-wsem = 1;
+sem_t x, wsem;
 
 int readCount;
 
@@ -37,14 +36,17 @@ void* reader(){
   }
 }
 void* writer(){
-  int index = *(int*)arg;
-  printf("Writer #%d is tying to write\n", index);
-  sem_wait(&x);
-  WRITEUNIT(index);
-  sem_post(&x);
+  while(true){
+  sem_wait (&wsem);
+    WRITEUNIT;
+    sem_post(&wsem);
+  }
 }
 
 int main(){
+  readCount = 0;
+  parbegin(reader, wwriter);
+  
   pthread_t readers[10];
   pthread_t writer[10];
   int ids[10];
