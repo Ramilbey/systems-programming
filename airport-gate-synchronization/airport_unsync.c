@@ -141,7 +141,7 @@ int find_gate_unsafe(FlightType flight_type, int flight_id, bool is_emergency,
         
         if (gate_available) {
             // DANGER: Between this check and assignment, another thread might take the gate!
-            usleep(50000); // Simulate decision time (makes race condition more likely)
+            usleep(50000); // Simulates decision time (makes race condition more likely)
             
             // Check if gate needs cleaning
             if (airport[i].occupied_until > arrival_time) {
